@@ -1,0 +1,21 @@
+# Web framework
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+
+# Telegram
+python-telegram-bot==21.3
+
+# MongoDB (async)
+motor==3.4.0
+pymongo==4.7.3
+
+# HTTP client (email API calls)
+httpx==0.27.0
+
+# Config / validation
+pydantic==2.7.4
+pydantic-settings==2.3.3
+python-dotenv==1.0.1
+
+# Python 3.11 compat
+anyio==4.4.0
