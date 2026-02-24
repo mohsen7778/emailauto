@@ -1,30 +1,48 @@
-# ── Build stage ────────────────────────────────────────────────────────────────
-FROM python:3.11-slim AS base
+schemaVersion: 1.2
 
-# System deps only (no build tools in final image)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+endpoints:
+  - name: cold-email-api
+    displayName: Cold Email Bot API
+    service:
+      basePath: /
+      port: 8000
+    type: REST
+    networkVisibilities:
+      - Public
 
-WORKDIR /app
-
-# Install Python deps in a separate layer for cache efficiency
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
-
-# Copy source
-COPY . .
-
-# ── Runtime ────────────────────────────────────────────────────────────────────
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PORT=8000
-
-EXPOSE 8000
-
-# Non-root user for security
-RUN useradd -m -u 10001 appuser
-USER 10001
-
-CMD ["python", "main.py"]
+configurations:
+  env:
+    - name: TELEGRAM_BOT_TOKEN
+      valueFrom:
+        configForm:
+          displayName: Telegram Bot Token
+          type: secret
+          required: true
+    
+    - name: ADMIN_CHAT_IDS
+      valueFrom:
+        configForm:
+          displayName: Admin Telegram Chat IDs
+          type: string
+          required: true
+    
+    - name: MONGO_URI
+      valueFrom:
+        configForm:
+          displayName: MongoDB Atlas URI
+          type: secret
+          required: true
+    
+    - name: BREVO_API_KEY
+      valueFrom:
+        configForm:
+          displayName: Brevo API Key
+          type: secret
+          required: true
+    
+    - name: SENDER_EMAIL
+      valueFrom:
+        configForm:
+          displayName: Sender Email
+          type: string
+          required: true
